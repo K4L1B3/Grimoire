@@ -1,0 +1,26 @@
+{
+  "name": "@grimorio/db",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./auth": "./src/auth.ts"
+  },
+  "scripts": {
+    "push": "drizzle-kit push",
+    "generate": "drizzle-kit generate",
+    "typecheck": "tsc -p .",
+    "migrate": "drizzle-kit migrate"
+  },
+  "dependencies": {
+    "@node-rs/argon2": "^2.2.2",
+    "better-auth": "^1.7.14",
+    "drizzle-orm": "^0.45.4",
+    "pg": "^8.23.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "^0.31.11"
+  }
+}

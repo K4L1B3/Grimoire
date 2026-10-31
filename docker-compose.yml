@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: grimorio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina no .env}
+      POSTGRES_DB: grimorio
+    volumes: [pgdata:/var/lib/postgresql/data]
+    ports: ["127.0.0.1:${PG_PORT:-5432}:5432"]
+    healthcheck:
+      test: pg_isready -U grimorio
+      interval: 5s
+
+  # Arquivos (mapas, PDFs, imagens) num S3 compatível. Imagem da comunidade: a MinIO parou de publicar a oficial.
+  minio:
+    image: ${MINIO_IMAGE:-pgsty/minio:latest}
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:?defina no .env}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:?defina no .env}
+    volumes: [miniodata:/data]
+    ports: ["127.0.0.1:${MINIO_PORT:-9010}:9000", "127.0.0.1:${MINIO_CONSOLE_PORT:-9011}:9001"]
+
+  web:
+    build: { context: ., target: web }
+    environment: &app
+      DATABASE_URL: postgres://grimorio:${POSTGRES_PASSWORD}@postgres:5432/grimorio
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?defina no .env}
+      BETTER_AUTH_URL: https://${DOMAIN:-localhost}
+      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-}
+      DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-}
+      S3_ENDPOINT: http://minio:9000
+      S3_BUCKET: ${S3_BUCKET:-grimorio}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+    depends_on:
+      minio: { condition: service_started }
+      postgres: { condition: service_healthy }
+      realtime: { condition: service_started }
+    profiles: [full]
+
+  realtime:
+    build: { context: ., target: realtime }
+    environment: *app
+    depends_on: { postgres: { condition: service_healthy } }
+    profiles: [full]
+
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    ports: ["80:80", "443:443"]
+    volumes: [./Caddyfile:/etc/caddy/Caddyfile:ro, caddydata:/data]
+    depends_on: [web, realtime]
+    profiles: [full]
+
+volumes:
+  pgdata:
+  miniodata:
+  caddydata:

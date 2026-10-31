@@ -1,0 +1,9 @@
+node_modules
+**/node_modules
+**/.next
+**/.turbo
+.env
+.git
+**/.next-e2e
+backups
+data

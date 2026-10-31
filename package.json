@@ -1,0 +1,20 @@
+{
+  "name": "grimorio",
+  "private": true,
+  "packageManager": "pnpm@12.16.1",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "test": "turbo test",
+    "typecheck": "turbo typecheck",
+    "db:push": "pnpm --filter @grimorio/db push",
+    "backup": "sh scripts/backup.sh",
+    "e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.6",
+    "turbo": "^2.11.10",
+    "typescript": "^7.0.2"
+  }
+}

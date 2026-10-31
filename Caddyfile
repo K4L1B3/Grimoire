@@ -1,0 +1,12 @@
+# Web e realtime no mesmo domínio, para o cookie de sessão valer nos dois.
+{$DOMAIN} {
+	handle /rt/* {
+		reverse_proxy realtime:4000
+	}
+	handle /collab* {
+		reverse_proxy realtime:4000
+	}
+	handle {
+		reverse_proxy web:3000
+	}
+}
