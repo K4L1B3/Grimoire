@@ -1,0 +1,1 @@
+ALTER TABLE "asset" ALTER COLUMN "campaign_id" DROP NOT NULL;

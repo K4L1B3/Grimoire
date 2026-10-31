@@ -1,0 +1,10 @@
+node_modules
+.next*
+.turbo
+.env
+data
+test-results
+playwright-report
+apps/web/public/pdf.worker.min.mjs
+apps/web/public/fonts
+backups

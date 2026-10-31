@@ -1,0 +1,1 @@
+ALTER TABLE "scene" ADD COLUMN "reveal" "bytea";
