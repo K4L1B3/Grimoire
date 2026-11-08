@@ -3,3 +3,6 @@ packages:
   - packages/*
 allowBuilds:
   esbuild: true
+  # Têm binário pré-compilado por plataforma; o script de build é só fallback.
+  '@parcel/watcher': false
+  '@swc/core': false
