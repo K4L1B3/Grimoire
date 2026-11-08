@@ -1,7 +1,7 @@
 # Deploy no Coolify (build pack "Docker Compose"). O proxy do Coolify (Traefik) faz o papel do Caddy:
 # mesmo domínio para web e realtime, para o cookie de sessão valer nos dois.
 # Senhas: geradas pelo Coolify (SERVICE_PASSWORD_*). Arquivos: disco (volume uploads), sem MinIO.
-# ponytail: domínio fixo nas labels; troque grimorio.belispetre.com aqui e em BETTER_AUTH_URL se mudar.
+# ponytail: domínio fixo nas labels; troque rpg.belispetre.com aqui e em BETTER_AUTH_URL se mudar.
 services:
   postgres:
     image: postgres:17-alpine
@@ -19,7 +19,7 @@ services:
     environment: &app
       DATABASE_URL: postgres://grimorio:${SERVICE_PASSWORD_POSTGRES}@postgres:5432/grimorio
       BETTER_AUTH_SECRET: ${SERVICE_PASSWORD_64_BETTERAUTH}
-      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-https://grimorio.belispetre.com}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-https://rpg.belispetre.com}
       DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID:-}
       DISCORD_CLIENT_SECRET: ${DISCORD_CLIENT_SECRET:-}
       UPLOAD_DIR: /data/uploads
@@ -29,13 +29,13 @@ services:
       realtime: { condition: service_started }
     labels:
       - traefik.enable=true
-      - traefik.http.routers.grimorio-web.rule=Host(`grimorio.belispetre.com`)
+      - traefik.http.routers.grimorio-web.rule=Host(`rpg.belispetre.com`)
       - traefik.http.routers.grimorio-web.entryPoints=https
       - traefik.http.routers.grimorio-web.tls=true
       - traefik.http.routers.grimorio-web.tls.certresolver=letsencrypt
       - traefik.http.routers.grimorio-web.service=grimorio-web
       - traefik.http.services.grimorio-web.loadbalancer.server.port=3000
-      - traefik.http.routers.grimorio-http.rule=Host(`grimorio.belispetre.com`)
+      - traefik.http.routers.grimorio-http.rule=Host(`rpg.belispetre.com`)
       - traefik.http.routers.grimorio-http.entryPoints=http
       - traefik.http.routers.grimorio-http.middlewares=redirect-to-https
       - traefik.http.routers.grimorio-http.service=grimorio-web
@@ -46,7 +46,7 @@ services:
     depends_on: { postgres: { condition: service_healthy } }
     labels:
       - traefik.enable=true
-      - traefik.http.routers.grimorio-rt.rule=Host(`grimorio.belispetre.com`) && (PathPrefix(`/rt`) || PathPrefix(`/collab`))
+      - traefik.http.routers.grimorio-rt.rule=Host(`rpg.belispetre.com`) && (PathPrefix(`/rt`) || PathPrefix(`/collab`))
       - traefik.http.routers.grimorio-rt.priority=100
       - traefik.http.routers.grimorio-rt.entryPoints=https
       - traefik.http.routers.grimorio-rt.tls=true
